@@ -27,16 +27,27 @@ public struct LBJGridMediaBrowser<SectionType: LBJGridMediaBrowserSectionType>: 
     self.dataSource = dataSource
   }
 
+  let bottomID = UUID()
+
   public var body: some View {
-    ScrollView {
-      LazyVGrid(
-        columns: [GridItem(.adaptive(minimum: minItemSize.width), spacing: itemSpacing)],
-        spacing: itemSpacing
-      ) {
-        ForEach(dataSource.sections) { sectionView(for: $0) }
+      ScrollView {
+          ScrollViewReader { value in
+              LazyVGrid(
+                  columns: [GridItem(.adaptive(minimum: minItemSize.width), spacing: itemSpacing)],
+                  spacing: itemSpacing
+              ) {
+                  ForEach(dataSource.sections) { sectionView(for: $0) }
+              }
+              .padding(0)
+              .onAppear {
+                  value.scrollTo(bottomID, anchor: .bottom)
+              }
+
+              Color.clear
+                  .frame(height: 10)
+                  .id(bottomID)
+          }
       }
-      .padding(0)
-    }
   }
 }
 
